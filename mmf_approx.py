@@ -47,16 +47,18 @@ def mmf_approx (a):
 	activelist = range(n)
 	m = identity(2,dtype=np.float64)
 	C = np.empty((2,2),dtype=np.float64)
-	cost = np.empty((n,n),dtype=np.float64)
+	#cost = np.empty((n,n),dtype=np.float64)
+	costlist = []
 	
 	while active.size > 1:
-		cost[:,:] = 0.0
+		costlist = []
+		#cost.fill(0.0)
 		aTemp = a[:,active][active,:]
 		aaT = np.dot(aTemp,aTemp)
 		
 		aaTshape = aaT.shape[0]
-		aaT_upper_flat = aaT[np.triu_indices(aaTshape)] #flatten the upper triangle of aaT
-		
+		aaT = aaT[np.triu_indices(aaTshape)] #flatten the upper triangle of aaT
+		print aaT.shape
 		print a.nbytes,aaT.nbytes
 		active_size = active.size
 		masterdict = {} # {(i,j): [nd.array of dim(2,),ind_to_remove]}
@@ -71,40 +73,41 @@ def mmf_approx (a):
 			m[(0,1),(1,0)]= 0.0
 			C[:,:]= 0.0 #contains the 'mass' moved to the diagonal
 
-			C[0,0] = aaT_upper_flat[ind_matrix_to_vec(k,k,aaTshape)]#aaT[k,k]
-			C[0,1] = aaT_upper_flat[ind_matrix_to_vec(k,l,aaTshape)]#aaT[k,l]
-			C[1,0] = aaT_upper_flat[ind_matrix_to_vec(k,l,aaTshape)]#aaT[k,l]
-			C[1,1] = aaT_upper_flat[ind_matrix_to_vec(l,l,aaTshape)]#aaT[l,l]
+			C[0,0] = aaT[ind_matrix_to_vec(k,k,aaTshape)]#aaT[k,k]
+			C[0,1] = aaT[ind_matrix_to_vec(k,l,aaTshape)]#aaT[k,l]
+			C[1,0] = aaT[ind_matrix_to_vec(k,l,aaTshape)]#aaT[k,l]
+			C[1,1] = aaT[ind_matrix_to_vec(l,l,aaTshape)]#aaT[l,l]
 
 			eigval,eigvec = linalg.eigh(C)
 			#classic_jacobi_rotate(C,m,0,1)
 			
 			if eigval[0]<eigval[1]: 
-				cost[i,j] = eigval[0]
-				#aaT[j,i] = eigval[0]
+				#cost[i,j] = eigval[0]
+				costlist.append((i,j,eigval[0]))
 				masterdict[(i,j)] = [eigvec[:2,1],i] #second column view instead of (eigvec[0,1],eigvec[1,1])
 			else:
-				cost[i,j] = eigval[1]
-				#aaT[j,i] = eigval[1]
+				#cost[i,j] = eigval[1]
+				costlist.append((i,j,eigval[1]))
 				masterdict[(i,j)] = [eigvec[:2,1],j]
-				
-		#print cost
-		#print aaT
-		cost[:,:] = cost[:,:] + cost.T
-		#aaT = np.tril(aaT,1)
-		#aaT = aaT+aaT.T
-		G = nx.from_numpy_matrix(cost*(-1)) #since the diffusion matrix is used
-	
-		if len(G.edges())==0:
-			break
+		
+		H=nx.Graph()
+		for item in costlist:
+			H.add_edge(item[0],item[1],weight=-item[2]) #TODO MAKE THIS (-1) A PARAMETER
 			
-		matching = nx.max_weight_matching(G,maxcardinality=True)
+		#cost[:,:] = cost[:,:] + cost.T
+		#G = nx.from_numpy_matrix(cost*(-1)) #since the diffusion matrix is used	
+	
+		if len(H.edges())==0:
+			break
+				
+		matching = nx.max_weight_matching(H,maxcardinality=True)
+		#TODO MAKE THIS MORE EFFICIENT
 		#remove repeated vertices from the matching (G is undirected)
 		s = set([])
 		for key in matching.iterkeys():
 			if key < matching[key]:
 				s.add((key,matching[key]))
-		#print "matching: ", s
+		print "matching: ", s
 
 		to_remove=[]
 		for edge in s:
