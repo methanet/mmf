@@ -70,19 +70,27 @@ def mmf_approx (a):
 			C[1,0] = aaT[ind_matrix_to_vec(k,l,aaTshape)]#aaT[k,l]
 			C[1,1] = aaT[ind_matrix_to_vec(l,l,aaTshape)]#aaT[l,l]
 
-			eigval,eigvec = linalg.eigh(C)
-			#classic_jacobi_rotate(C,m,0,1)
+			#eigval,eigvec = linalg.eigh(C)
+			#print eigval
+			#print eigvec
 			
-			if eigval[0]<eigval[1]: 
-				masterdict[(i,j)] = [eigvec[:2,1],i, eigval[0]] #take view of 2nd column instead of (eigvec[0,1],eigvec[1,1])
+			classic_jacobi_rotate(C,m,0,1)
+			
+			print m
+			print C
+			#if eigval[0]<eigval[1]:
+			if C[0,0] <C[1,1]:
+				masterdict[(i,j)] = [m[:2,1],i, C[0,0]] 
+				#masterdict[(i,j)] = [eigvec[:2,1],i, eigval[0]] #take view of 2nd column instead of (eigvec[0,1],eigvec[1,1])
 			else:
-				masterdict[(i,j)] = [eigvec[:2,1],j,eigval[1]]
+				masterdict[(i,j)] = [m[:2,1],i, C[1,1]] 
+				#masterdict[(i,j)] = [eigvec[:2,1],j,eigval[1]]
 		
 		H=nx.Graph()
 		
 		#TODO use map here or delete each item after use?
 		for pair, info in masterdict.iteritems():
-			H.add_edge(pair[0],pair[1],weight=-info[2]) #TODO MAKE THIS (-1) A PARAMETER
+			H.add_edge(pair[0],pair[1],weight=-info[2]) #TODO MAKE THIS (i.e. -1) A PARAMETER
 
 		if len(H.edges())==0:
 			break
@@ -105,6 +113,8 @@ def mmf_approx (a):
 		active = np.where(active01)[0]
 		activelist = list(active)
 	npt.assert_almost_equal(np.dot(p,p.T),identity(n),decimal=10) #check orthogonality
+	
+	print diag(a)
 	return diag(a), p
 
 def test1(number_of_nodes):
