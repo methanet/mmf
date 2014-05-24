@@ -32,7 +32,6 @@ def rotate_active_by (A, P, p, q, phi, active):
 def ind_matrix_to_vec(i, j, n):
 	return i*n - (i-1)*i/2 + j-i
 	
-
 #def calc_parameters(aaT,active,C,m,):	
 #return cost, phis, temp remove
 	
@@ -47,24 +46,17 @@ def mmf_approx (a):
 	activelist = range(n)
 	m = identity(2,dtype=np.float64)
 	C = np.empty((2,2),dtype=np.float64)
-	#cost = np.empty((n,n),dtype=np.float64)
-	costlist = []
 	
 	while active.size > 1:
-		costlist = []
-		#cost.fill(0.0)
-		aTemp = a[:,active][active,:]
-		aaT = np.dot(aTemp,aTemp)
-		
-		aaTshape = aaT.shape[0]
-		aaT = aaT[np.triu_indices(aaTshape)] #flatten the upper triangle of aaT
-		print aaT.shape
-		print a.nbytes,aaT.nbytes
-		active_size = active.size
 		masterdict = {} # {(i,j): [nd.array of dim(2,),ind_to_remove]}
 		
-		#for k in xrange(active.size-1):
-		#	for l in xrange(k+1,active.size):
+		aTemp = a[:,active][active,:]
+		aaT = np.dot(aTemp,aTemp)
+		aaTshape = aaT.shape[0]
+		
+		aaT = aaT[np.triu_indices(aaTshape)] #flatten just the upper triangle of aaT
+		active_size = active.size
+		
 		for k,l in combinations(xrange(active.size),2): 
 			i = active[k]; j = active[l]
 			
@@ -82,21 +74,16 @@ def mmf_approx (a):
 			#classic_jacobi_rotate(C,m,0,1)
 			
 			if eigval[0]<eigval[1]: 
-				#cost[i,j] = eigval[0]
-				costlist.append((i,j,eigval[0]))
-				masterdict[(i,j)] = [eigvec[:2,1],i] #second column view instead of (eigvec[0,1],eigvec[1,1])
+				masterdict[(i,j)] = [eigvec[:2,1],i, eigval[0]] #take view of 2nd column instead of (eigvec[0,1],eigvec[1,1])
 			else:
-				#cost[i,j] = eigval[1]
-				costlist.append((i,j,eigval[1]))
-				masterdict[(i,j)] = [eigvec[:2,1],j]
+				masterdict[(i,j)] = [eigvec[:2,1],j,eigval[1]]
 		
 		H=nx.Graph()
-		for item in costlist:
-			H.add_edge(item[0],item[1],weight=-item[2]) #TODO MAKE THIS (-1) A PARAMETER
-			
-		#cost[:,:] = cost[:,:] + cost.T
-		#G = nx.from_numpy_matrix(cost*(-1)) #since the diffusion matrix is used	
-	
+		
+		#TODO use map here or delete each item after use?
+		for pair, info in masterdict.iteritems():
+			H.add_edge(pair[0],pair[1],weight=-info[2]) #TODO MAKE THIS (-1) A PARAMETER
+
 		if len(H.edges())==0:
 			break
 				
