@@ -1,0 +1,28 @@
+function MRF(A,nsub)
+[n,m]=size(A);
+T=zeros(n); for i=1:n T(i)=norm(A(i,:))^2; end
+activelist=zeros(n); for i=1:n activelist(i)=i; end
+
+U=eye(n);
+scores=zeros(n,1);
+for r=n:-1:sub
+    ri=rand(r);
+    i=activelist(ri);
+    for rj=1:r
+        j=activelist(j);
+        score(rj)=T(i)+T(j)-sqrt((T(i)+T(j))^2-4*T(i)*T(j)+4*Tij^2);
+    end
+    score(ri)=NaN;
+    [dummy,rj]=min(score(1:r));
+    j=activelist(rj);
+    tau=(T(j)-T(i))/(A(i,:)*A(j,:)')/2;
+    t=-tau+sqrt(tau^2+1);
+    c=1/sqrt(1+t^2);
+    R=[[c,c*t];[-c*t,c]];
+    A([i,j],:)=R*A([i,j],:);
+    U(:,[i,j])=U(:,[i,j])*R';
+    activelist=[activelist(1:rj-1),activelist(rj+1,r)];
+end
+
+
+end
