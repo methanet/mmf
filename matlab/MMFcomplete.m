@@ -14,7 +14,8 @@ else
 end
 U=U(:,rows);
 V=V(:,cols);
-M=zeros(obs,Nrows*Ncols);
+M= zeros(obs,Nrows*Ncols);
+
 for o=1:obs
     for i=1:Nrows
         for j=1:Ncols
@@ -23,11 +24,14 @@ for o=1:obs
         end
     end
 end
+
 x=pinv(M)*v;
 %F=M*x;
 %F(1:10)
 %v(1:10)
 %[mu,ms,mv]=svd(M);
 %diag(ms)
-S=reshape(x,Nrows,Ncols)';
+
+S=sparse(reshape(x,Nrows,Ncols)');
+
 end

@@ -1,4 +1,4 @@
-function [Adash,err, errOmega]=CompletionTest(A,obs,Nrows,Ncols,k)
+function [Adash,err, errOmega]=SymMMFCompletionTest(A,obs,Nrows,Ncols,k)
 % COMPLETIONTEST attempt to recover a matrix from sampled entries with MMF
 % 
 % Usage: [Adash,err]=CompletionTest(A,obs,nrows,ncols,k=2) 
@@ -28,11 +28,11 @@ for o=1:obs
     v(o)=A(I(o),J(o));
 end
 
-[U,S,V]=MMFcomplete(I,J,v,n,m,Nrows,Ncols,k);
+[U,S,V]=SymMMFcomplete(I,J,v,n,Nrows,k);
 Adash=U*S*V';
 
 err=norm(A-Adash,'fro')/norm(A,'fro');
 errOmega = norm(A (sub2ind(size(A), I, J))-Adash(sub2ind(size(A), I, J)), 'fro')/norm(A(sub2ind(size(A), I, J)) ,'fro'); 
 
-%%%fprintf('JacobiError=%f\n',err);
+fprintf('SymMMFJacobiError=%f\n',err);
 end
