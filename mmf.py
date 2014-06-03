@@ -70,7 +70,7 @@ def mmf_approx (a):
 			C[1,1] = aaT[l,l]
 			
 			eigval,eigvec = linalg.eigh(C)
-			#classic_jacobi_rotate(C,m,0,1)
+			classic_jacobi_rotate(C,m,0,1)
 			
 			if eigval[0]<eigval[1]: 
 				cost[i,j] = eigval[0]
