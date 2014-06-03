@@ -2,6 +2,7 @@ function [U,S,V]=MMFcomplete(I,J,v,n,m,Nrows,Ncols,k)
 if nargin<8 k=2; end
 preA=zeros(n,m);
 [obs,~]=size(I);
+
 for o=1:obs 
     preA(I(o),J(o))=v(o);
 end;
@@ -15,13 +16,16 @@ end
 U=U(:,rows);
 V=V(:,cols);
 M= zeros(obs,Nrows*Ncols);
-
+%Mtemp = zeros(obs, Nrows, Ncols); 
 for o=1:obs
     for i=1:Nrows
+        %Vtemp = U(I(o),i)*V(J(o), :);
+        %Vtemp
         for j=1:Ncols
             p=(i-1)*Ncols+j;
             M(o,p)=U(I(o),i)*V(J(o),j);
         end
+       % Mtemp(o, i, :)= Vtemp; 
     end
 end
 
@@ -31,7 +35,5 @@ x=pinv(M)*v;
 %v(1:10)
 %[mu,ms,mv]=svd(M);
 %diag(ms)
-
 S=sparse(reshape(x,Nrows,Ncols)');
-
 end

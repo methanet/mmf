@@ -1,3 +1,4 @@
+%obs is fraction e.g. 0.7
 function phasetransitionKronecker(obs,iters, step, kronsize)%, Nrows, Ncols)
 generator = rand(2,2); 
 generator = triu(generator)' + triu(generator,1); 
@@ -22,6 +23,6 @@ for i=1: iters
     end
 end
 
-plot(1:step:n1, MRFerror, 'b', 1:step:n1, MRFerrorOmega, 'r')
+plot(1:step:n1, MRFerror/iters, 'b', 1:step:n1, MRFerrorOmega/iters, 'r')
 legend('MRFerror', 'MRFerrorOmega') ; 
 end

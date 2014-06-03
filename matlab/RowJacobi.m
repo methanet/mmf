@@ -7,7 +7,6 @@ activelist=zeros(n,1); for i=1:n activelist(i)=i; end
 U=speye(n);
 scores=zeros(n,1);
 for r=n:-1:nsub+1
-    A - A'
     ri=randi(r);
     i=activelist(ri);
     for rj=1:r
@@ -42,7 +41,7 @@ for r=n:-1:nsub+1
         Tj=T(i);
         %%%display(sprintf('%d %d %f',i,j,score(rj)));
     end
-    display(sprintf('%f %f %f %f %f',full(prenm(1)^2),full(prenm(2)^2),full(postnm(1)^2),full(postnm(2)^2),full(Tj)));
+    %display(sprintf('%f %f %f %f %f',full(prenm(1)^2),full(prenm(2)^2),full(postnm(1)^2),full(postnm(2)^2),full(Tj)));
     %display(sprintf('%f %f',norm(prenm),norm(postnm))); % OK
     
 end
