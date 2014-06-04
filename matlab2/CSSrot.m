@@ -7,14 +7,16 @@ p=zeros(m,1);
 for i=1:m
     [~,I]=kmax(S(i,:),k); 
     knn(i,:)=I;
-    p(i)=min(eig(S(I,I)));
+    p(i)= min(eig(S(I,I)));
 end
-counts=mnrnd(ncols,p/sum(p));
+counts=mnrnd(ncols, p/sum(p));
 selector=[];
 for i=1:m
     selector=[selector,i*ones(1,counts(i))];
 end
+%selector3 = counts.*(1:m);  
 C=A(:,selector);
+size(C)
 X=pinv(C'*C)*C'*A;
 
 

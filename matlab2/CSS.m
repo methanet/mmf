@@ -8,4 +8,4 @@ for i=1:m
     selector=[selector,i*ones(1,counts(i))];
 end
 C=A(:,selector);
-X=pinv(C'*C)*C'*A;
+X=pinv(full(C'*C))*C'*A;
