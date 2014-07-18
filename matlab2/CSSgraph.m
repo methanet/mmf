@@ -1,6 +1,6 @@
 function CSSgraph(A,iters, filename, k)
 if nargin<4 k=2; end
-cols = 3:2:25;
+cols = 3:2:10;
 CSSrotError = zeros (iters,numel(cols));
 CSSerror = zeros (iters, numel(cols));
 

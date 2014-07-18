@@ -1,5 +1,5 @@
 function [CSSerr, CSSrotErr] =CSStest(A,ncols,k)
-if nargin<4 k=2; end
+if nargin<3, k=2; end
 [C,X]=CSSrot(A,ncols,k);
 CSSrotErr=norm(A-C*X,'fro')/norm(A,'fro');
 fprintf('CSSrotError=%f ',CSSrotErr);
